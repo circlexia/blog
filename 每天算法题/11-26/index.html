@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>二次贝塞尔曲线</title>
+</head>
+<body>
+  <canvas id="canvas" width="600" height="600" style="border: 1px solid #ccc"></canvas>
+  <script>
+    // @params sx 起始点x坐标
+    // @params sy 起始点y坐标
+    // @params ex 结束点x坐标
+    // @params ey 结束点y坐标
+    // @params cx 控制点x坐标
+    // @params xy 控制点y坐标
+    function draw(sx,sy,ex,ey,cx,cy,part,interval){
+      var canvas = document.getElementById('canvas');
+      var ctx = canvas.getContext('2d');
+      // ctx.beginPath();
+      // ctx.moveTo(sx,sy);
+      // ctx.lineTo(cx,cy);
+      // ctx.moveTo(ex,ey);
+      // ctx.stroke();
+      // 绘制二次贝塞尔曲线
+      ctx.beginPath();
+      ctx.moveTo(sx,sy);
+      var changeX1 = (cx - sx) / part;
+      var changeY1 = (cy - sy) / part;
+      var changeX2 = (ex-cx) /part;
+      var changeY2 = (ey - cy) / part;
+      var lastX = sx;
+      var lastY = sy;
+      var i = 0;
+      return function(){
+        var qx1 = sx + changeX1 * i;
+        var qy1 = sy + changeY1 * i;
+        var qx2 = cx + changeX2 * i;
+        var qy2 = cy + changeY2 * i;
+        var bx = qx1 + (qx2 - qx1)*i/part;
+        var by = qy1 + (qy2 - qy1)*i/part;
+        ctx.beginPath();
+        ctx.moveTo(lastX,lastY);
+        ctx.lineTo(bx,by);
+        ctx.stroke();
+        lastX = bx;
+        lastY = by;
+        i+=1;
+        if(i<part){
+          setTimeout(arguments.callee,interval);
+        }
+      }
+    }
+    window.onload = function(){
+      var display = draw(0,0,600,0,150,450,800,1);
+      display();
+    }
+  </script>
+</body>
+</html>
