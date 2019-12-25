@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图片懒加载</title>
+</head>
+<body>
+    <img src="1.gif" data-src="https://cdn.pixabay.com/photo/2015/09/09/16/05/forest-931706_1280.jpg" alt="">
+    <script>
+        // 原生js实现
+        var img = document.getElementsByTagName('img');
+        var n = 0;
+        lazyload();
+        function throttle(event, time){
+            let timer = null;
+            return function (...args){
+                if(!timer){
+                    timer = setTimeout(()=>{
+                        timer = null;
+                        event.apply(this.args);
+                    },time);
+                }
+            }
+        }
+        window.addEventListener('scroll',throttle(lazyload,200))
+        function lazyload(){
+            var seeHeight = window.innerHeight;
+            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            for(var i = n;i<img.length;i++){
+                // 判断是否位于可视区域
+                if(img[i].offsetTop < seeHeight+scrollTop){
+                    if(img[i].getAttribute('src') === '1.gif'){
+                        img[i].src=img[i].getAttribute('data-src');
+                    }
+                    n = i + 1;
+                }
+            }
+        }
+        // IntersectionObserver
+        if (IntersectionObserver) {
+            let lazyImageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry, index) => {
+                let lazyImage = entry.target;
+                // 如果元素可见            
+                if (entry.intersectionRatio > 0) {
+                    if (lazyImage.getAttribute("src") == "loading.gif") {
+                    lazyImage.src = lazyImage.getAttribute("data-src");
+                    }
+                    lazyImageObserver.unobserve(lazyImage)
+                }
+                })
+            })
+            for (let i = 0; i < img.length; i++) {
+                lazyImageObserver.observe(img[i]);
+            }
+        }
+    </script>
+</body>
+</html>
